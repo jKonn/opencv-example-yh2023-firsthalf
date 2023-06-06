@@ -1,0 +1,13 @@
+# 의존성 패키지 설치
+
+# pafy
+(venv)$ pip install pafy
+
+# youtube-dl
+(venv)$ pip install youtube-dl
+
+# cap_from_youtube
+(venv)$ pip install cap-from-youtube
+
+# 적당한 유튜브 영상 링크 가져오기
+https://www.youtube.com/watch?v=QyBdhdz7XM4
