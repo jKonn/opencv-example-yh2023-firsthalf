@@ -5,7 +5,7 @@ import cv2
 # cap_from_youtube
 # https://www.youtube.com/watch?v=QyBdhdz7XM4
 
-import pafy
+# import pafy
 from cap_from_youtube import cap_from_youtube
 
 
@@ -50,7 +50,8 @@ if cap.isOpened():
         # 프레임간에 딜레이를 준다 (화면에 유지될 시간)
         # 만약 아무키나 입력한다면 영상플레이를 중단하고 종료
         # cv2.waitKey() 는 지정된 시간안에 키 입력이 없다면 -1을 반환
-        if cv2.waitKey(1) >= 0:
+        # 1/60, 1/30, 1/40 = 0.025
+        if cv2.waitKey(25) >= 0:
             break
         pass
     pass
