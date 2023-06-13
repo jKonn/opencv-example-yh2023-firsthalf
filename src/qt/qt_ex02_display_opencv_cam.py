@@ -1,15 +1,23 @@
 import cv2
 import numpy as np
-# import threading
 import time
 
-from PySide2.QtWidgets import (
+# from PySide2.QtWidgets import (
+#     QApplication, QWidget, QVBoxLayout,
+#     QLabel, QFrame, QSizePolicy, QPushButton,
+#     QFileDialog, QMessageBox
+# )
+
+# from PySide2.QtGui import QPixmap, QImage
+
+from PyQt5.QtWidgets import (
     QApplication, QWidget, QVBoxLayout,
     QLabel, QFrame, QSizePolicy, QPushButton,
     QFileDialog, QMessageBox
 )
 
-from PySide2.QtGui import QPixmap, QImage
+from PyQt5.QtGui import QPixmap, QImage
+
 import sys
 
 
