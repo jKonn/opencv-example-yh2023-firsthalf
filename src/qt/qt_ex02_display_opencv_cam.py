@@ -2,24 +2,40 @@ import cv2
 import numpy as np
 import time
 
-# from PySide2.QtWidgets import (
-#     QApplication, QWidget, QVBoxLayout,
-#     QLabel, QFrame, QSizePolicy, QPushButton,
-#     QFileDialog, QMessageBox
-# )
-
-# from PySide2.QtGui import QPixmap, QImage
-
-from PyQt5.QtWidgets import (
-    QApplication, QWidget, QVBoxLayout,
-    QLabel, QFrame, QSizePolicy, QPushButton,
-    QFileDialog, QMessageBox
-)
-
-from PyQt5.QtGui import QPixmap, QImage
+from PySide2.QtWidgets import *
+from PySide2.QtGui import *
+from PySide2.QtCore import *
 
 import sys
 
+
+class Worker(QThread):
+
+    capture = Signal(QImage)
+
+    def run(self):
+        # OpenCV 로 읽어온 VideoCapture의 Frame을 외부로 전달
+
+        self.cap = cv2.VideoCapture(0)
+        if (self.cap.isOpened()):
+
+            while True:
+                ret, frame = self.cap.read()
+                if not ret:
+                    break
+
+                # 색상구조 변환 (BRG -> RGB)
+                img = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                h,w,c = img.shape
+                qImg = QImage(img.data, w, h, w * c, QImage.Format_RGB888)
+                self.capture.emit(qImg)
+
+                # pixmap = QPixmap.fromImage(qImg)
+                # self.imageLabel.setPixmap(pixmap)
+
+                self.msleep(25)
+        
+        self.cap.release()
 
 
 class MainWindow(QWidget):
@@ -49,38 +65,45 @@ class MainWindow(QWidget):
     def onClicked(self):
         self.displayCam()
 
+    def showFrame(self, frame:QImage):
+        pixmap = QPixmap.fromImage(frame)
+        self.imageLabel.setPixmap(pixmap)
+
     def displayCam(self):
 
-        cap = cv2.VideoCapture(0)
-        if (cap.isOpened()):
+        # 비디오를 읽어오는 쓰레드 동작
+        self.worker = Worker()
+        self.worker.capture.connect(self.showFrame)
+        self.worker.start()
 
-            while True:
-                ret, frame = cap.read()
+        # cap = cv2.VideoCapture(0)
+        # if (cap.isOpened()):
 
-                if not ret:
-                    break
+        #     while True:
+        #         ret, frame = cap.read()
 
-                # 색상구조 변환 (BRG -> RGB)
-                img = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                h,w,c = img.shape
-                qImg = QImage(img.data, w, h, w * c, QImage.Format_RGB888)
-                pixmap = QPixmap.fromImage(qImg)
+        #         if not ret:
+        #             break
 
-                self.imageLabel.setPixmap(pixmap)
+        #         # 색상구조 변환 (BRG -> RGB)
+        #         img = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        #         h,w,c = img.shape
+        #         qImg = QImage(img.data, w, h, w * c, QImage.Format_RGB888)
+        #         pixmap = QPixmap.fromImage(qImg)
 
-                # time.sleep(0.25)
+        #         self.imageLabel.setPixmap(pixmap)
 
-                if (cv2.waitKey(1) >= 0):
-                    break
+        #         # time.sleep(0.25)
 
-        cap.release()
-        cv2.destroyAllWindows()
+        #         if (cv2.waitKey(1) >= 0):
+        #             break
+
+        # cap.release()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
 
     window = MainWindow()
     window.show()
-    # window.displayCam()
 
     app.exec_()

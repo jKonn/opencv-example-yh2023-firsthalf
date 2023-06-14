@@ -1,0 +1,16 @@
+#pyside 설치
+$ pip3 install PySide2
+
+# 파이썬 인터프린터에서 설치된 PySide 버전 확인 (=설치확인)
+$ python3
+>>> import PySide2
+>>> PySide2.__version__
+
+>>> import PySide2.QtCore
+>>> PySide2.QtCore.__version__
+>>> PySide2.QtCore.qVersion()
+
+#Ctrl+Z 로 파이썬 콘솔 빠져나가기
+
+# Qt에서 opencv 사용시 에러가 발생한다면 설치해볼것
+$ pip install opencv-python-headless

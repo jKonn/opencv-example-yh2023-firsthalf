@@ -8,6 +8,10 @@ import sys
 import time
 import json
 
+import hashlib
+
+
+
 
 # jsonStr = '''{
 #     "author":"jKon",
@@ -84,7 +88,7 @@ class MainWindow(QWidget):
         # 등록진행
         self.onSignUp(inputId, inputPW)
 
-        print('사용자 가입완료')
+        # print('사용자 가입완료')
 
     def onSignUp(self, id, pw):
 
@@ -122,13 +126,6 @@ class MainWindow(QWidget):
 
         now = time.time()
 
-        user = {
-            'id':id,
-            'pw':pw,
-            'created':now,
-            'modified':now,
-        }
-
         # TODO:이미 가입된 사용자가 없는지 확인
         isExists = False
         ###############################################
@@ -140,14 +137,50 @@ class MainWindow(QWidget):
         # 요청된 id와 pw중 중복된 id는 존재할 수 없으니.. 
         # 요청된 id로 이미 존재하는 사용자를 검색 가능할듯??
 
+        # 이미 존재하는 사용자들 사이에 지금 요청한 id가 있는지 확인
+        # 필터링 (특정 조건에 해당하는 항목만 골라서 리스트로 구성)
+        finded = [user for user in users if user['username'] == id]
+        print('finded: ', finded)
+        isExists = len(finded) > 0
 
-
+        # for user in users:
+        #     if id == user['id']:
+        #         isExists = True
         ###############################################
         if isExists:
             print('이미 존재하는 사용자')
             return
+        
 
-        users.append(user)
+        # 새 사용자를 추가
+        # 비밀번호 해시
+        # 사용자 고유식별자 생성
+
+
+        formatId = f'{now}'.encode('utf-8')
+        sha1ID = hashlib.new('sha1')
+        sha1ID.update(formatId)
+        newId = sha1ID.hexdigest()
+        print('newId: ', newId)
+
+        formatPW = str(f'{pw}#jkon')
+        formatPW = formatPW.encode('utf-8')
+
+        sha1PW = hashlib.new('sha1')
+        sha1PW.update(formatPW)
+
+        pwHash = sha1PW.hexdigest()
+        print('pwHash: ', pwHash)
+
+        newUser = {
+            'id':newId,
+            'username':id,
+            'pw':pwHash,
+            'created':now,
+            'modified':now,
+        }
+
+        users.append(newUser)
         localDatabase['users'] = users
 
         # TODO:localDatabase -> json파일로 생성 후 저장
@@ -169,12 +202,21 @@ class MainWindow(QWidget):
     # 로그인만 처리하는 함수
     def onSignIn(self, id, pw):
 
+        # 모든 사용자들을 검사하여 해당 id와 pw가 일치하는 사용자가 있는지 확인!
         isAuth = False
         for user in users:
-            userId = user['id']
+            userId = user['username']
             userPw = user['pw']
 
-            if id == userId and pw == userPw:
+            formatPW = str(f'{pw}#jkon')
+            formatPW = formatPW.encode('utf-8')
+
+            sha1PW = hashlib.new('sha1')
+            sha1PW.update(formatPW)
+            pwHash = sha1PW.hexdigest()
+            print('onSignIn pwHash: ', pwHash)    
+
+            if id == userId and pwHash == userPw:
                 # 인증됨
                 isAuth = True
                 break
