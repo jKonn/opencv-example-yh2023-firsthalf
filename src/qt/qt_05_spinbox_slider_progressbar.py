@@ -42,6 +42,7 @@ if __name__ == '__main__':
     formSize = form.sizeHint()
     print('formSize: ', formSize)
 
+
     form.move(
         (screenSize.width()//2) - (formSize.width()//2), #x
         (screenSize.height()//2) - (formSize.height()//2) #y

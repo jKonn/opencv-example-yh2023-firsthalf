@@ -1,4 +1,5 @@
-from PySide2.QtWidgets import *
+# from PySide2.QtWidgets import *
+from PyQt5.QtWidgets import *
 # import PySide2.QtWidgets
 
 import sys
